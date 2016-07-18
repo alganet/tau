@@ -43,10 +43,11 @@
 
 (unless (require 'aquamacs-tabbar nil t)
   (use-package aquamacs-tabbar
+    :ensure t
     :load-path "quelpa/build/aquamacs-tabbar/"
     :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
 
-(use-package monokai)
+(use-package monokai-theme :ensure t)
 (require 'aquamacs-tabbar)
 (tabbar-mode t)
 (menu-bar-mode -1)

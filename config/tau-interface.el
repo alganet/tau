@@ -46,9 +46,11 @@
     :load-path "quelpa/build/aquamacs-tabbar/"
     :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
 
+(use-package monokai)
 (require 'aquamacs-tabbar)
 (tabbar-mode t)
 (menu-bar-mode -1)
+(scroll-bar-mode -1)
 
 (load-theme 'monokai t)
 

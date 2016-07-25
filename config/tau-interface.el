@@ -24,16 +24,6 @@
 (if window-system
     (tool-bar-mode -1))
 
-(define-key global-map [menu-bar file] nil)
-(define-key global-map [menu-bar edit] nil)
-(define-key global-map [menu-bar options] nil)
-(define-key global-map [menu-bar help-menu] nil)
-(define-key global-map [menu-bar buffer] nil)
-(define-key global-map [menu-bar tools] nil)
-(define-key text-mode-map [menu-bar text] nil)
-(define-key minibuffer-local-completion-map [menu-bar minibuf] nil)
-(define-key minibuffer-local-map [menu-bar minibuf] nil)
-
 (eval-after-load 'help-mode
   (lambda ()
     (define-key help-mode-map [menu-bar help-mode] nil)
@@ -84,7 +74,17 @@ Default is t."
                 tabbar-scroll-right-button (quote ((" » ") " » ")))))
     :group 'tabbar)
 
+(neotree-toggle)
 (new-empty-buffer)
+
+;; Don't show *Buffer list* when opening multiple files at the same time.
+(setq inhibit-startup-buffer-menu t)
+
+;; Show only one active window when opening multiple files at the same time.
+(add-hook 'window-setup-hook 'delete-other-windows)
+
+(add-hook 'emacs-startup-hook
+          (lambda () (delete-other-windows)) t)
 
 (defun spaceline-tau-theme (&rest additional-segments)
   "Install the modeline used by Spacemacs.
@@ -104,6 +104,7 @@ ADDITIONAL-SEGMENTS are inserted on the right, between `global' and
 
 (require 'spaceline-config)
 (setq powerline-default-separator 'zigzag)
+(setq powerline-height 26)
 (spaceline-toggle-buffer-id-off)
 (spaceline-toggle-minor-modes-off)
 (spaceline-toggle-buffer-modified-off)
@@ -121,8 +122,43 @@ ADDITIONAL-SEGMENTS are inserted on the right, between `global' and
 (spaceline-tau-theme)
 
 (spaceline-compile)
-(tabbar-mode t)
+
+
+ (when (require 'tabbar nil t)
+   ;; Enable tabbars globally:
+   (tabbar-mode 1)
+
+   ;; I use this minor-mode mainly as a global mode (see below):
+   (define-minor-mode tabbar-on-term-only-mode
+     "Display tabbar on terminals and buffers in fundamental mode only."
+     :init-value t
+     :lighter nil
+     :keymap nil
+     (if tabbar-on-term-only-mode
+         ;; filter is enabled
+         (if (eq major-mode 'neotree-mode); <- this can be easily customizable...
+             (tabbar-local-mode 1)
+             (tabbar-local-mode -1)
+           )
+       ;; always activate tabbar locally when we disable the minor mode:
+       (tabbar-local-mode 1)))
+
+   (defun tabbar-on-term-only-mode-on ()
+     "Turn on tabbar if current buffer is a terminal."
+     (unless (minibufferp) (tabbar-on-term-only-mode 1)))
+
+   ;; Define a global switch for the mode. Note that this is not set for buffers
+   ;; in fundamental mode.
+   ;;
+   ;; I use it 'cause some major modes do not run the
+   ;; `after-change-major-mode-hook'...
+   (define-globalized-minor-mode global-tabbar-on-term-only-mode
+     tabbar-on-term-only-mode tabbar-on-term-only-mode-on)
+
+   ;; Eventually, switch on this global filter for tabbars:
+   (global-tabbar-on-term-only-mode 1))
+
+
 (menu-bar-mode -1)
-(scroll-bar-mode -1)
 
 (provide 'tau-interface)

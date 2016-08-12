@@ -7,6 +7,7 @@
 (setq inhibit-startup-echo-area-message t)
 (setq-default message-log-max nil)
 (setq tabbar-auto-scroll-flag t)
+(setq ns-use-srgb-colorspace nil)
 
 (defun display-startup-echo-area-message ()
   (message ""))

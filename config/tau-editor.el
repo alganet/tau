@@ -3,7 +3,7 @@
 (setq auto-save-default nil)
 (setq-default cursor-type '(bar . 2))
 
-(cua-mode t)
+(cua-selection-mode t)
 (linum-mode t)
 (blink-cursor-mode t)
 (column-number-mode t)

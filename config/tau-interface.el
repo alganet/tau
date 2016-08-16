@@ -39,8 +39,13 @@
     :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
 (use-package monokai-theme :ensure t)
 
+(use-package neotree :ensure t)
+(require 'neotree)
 (require 'aquamacs-tabbar)
 
+(setq projectile-switch-project-action 'neotree-projectile-action)
+(setq neo-smart-open t)
+(setq neo-show-hidden-files t)
 
 (defadvice kill-buffer (before kill-buffer-before-advice activate)
   (let ((buffer-to-kill (ad-get-arg 0)))

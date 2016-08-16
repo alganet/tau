@@ -13,28 +13,32 @@
 (use-package drag-stuff :ensure t)
 (use-package popwin :ensure t)
 (use-package undo-tree :ensure t)
-(use-package neotree :ensure t)
 (use-package projectile :ensure t)
 (use-package counsel-projectile :ensure t)
 (use-package php-mode :ensure t)
+(use-package markdown-mode :ensure t)
+
 
 (require 'undo-tree)
+(require 'vc)
 (require 'projectile)
 (require 'counsel-projectile)
 (require 'swiper)
 (require 'counsel)
 (require 'ivy)
-(require 'neotree)
 (require 'avoid)
 (require 'multiple-cursors)
 (require 'drag-stuff)
 (require 'popwin)
 (require 'php-mode)
 
-(setq projectile-switch-project-action 'neotree-projectile-action)
-(setq neo-smart-open t)
-(setq neo-show-hidden-files t)
 (setq use-dialog-box t)
+
+(defun kill-ring-save-keep-highlight (beg end)
+  "Keep the region active after the kill"
+  (interactive "r")
+  (prog1 (kill-ring-save beg end)
+    (setq deactivate-mark nil)))
 
 (advice-add 'mc/mark-next-like-this
           :before

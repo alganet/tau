@@ -6,6 +6,7 @@
 (require 'tau-mouse)
 
 (use-package swiper :ensure t)
+(use-package exec-path-from-shell :ensure t)
 (use-package counsel :ensure t)
 (use-package ivy :ensure t)
 (use-package avoid :ensure t)

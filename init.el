@@ -6,6 +6,9 @@
 ;; Initialize packaging system
 (package-initialize)
 
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
 ;; Performance
 (setq gc-cons-threshold 20000000)
 
@@ -26,9 +29,13 @@
 
 ;; Setup standard package archive sources
 (setq package-archives
-      '(("melpa"        . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
+      '(("melpa"        . "https://elpa.zilongshanren.com/melpa/")
+        ("melpa-stable" . "https://elpa.zilongshanren.com/melpa-stable/")
         ("gnu"          . "https://elpa.gnu.org/packages/")))
+
+(setq ssl-program-name "gnutls-cli"
+      ssl-program-arguments '("--insecure" "-p" service host)
+      ssl-certificate-verification-policy 1)
 
 ;; Install use-package if not available
 (unless (require 'use-package nil t)

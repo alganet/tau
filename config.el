@@ -1,10 +1,10 @@
-(setq auto-save-default nil)
-(use-package spaceline :ensure t)
-(require 'tau-fonts)
-(require 'tau-interface)
-(require 'tau-editor)
-(require 'tau-mouse)
+(require 'tau-theme)
+(load-theme 'tau t)
 
+;; ---------------
+
+(setq auto-save-default nil)
+(setq mode-line-format "Initializing packages...")
 (use-package swiper :ensure t)
 (use-package exec-path-from-shell :ensure t)
 (use-package counsel :ensure t)
@@ -18,6 +18,7 @@
 (use-package counsel-projectile :ensure t)
 (use-package php-mode :ensure t)
 (use-package markdown-mode :ensure t)
+(use-package counsel-gtags :ensure t)
 
 
 (require 'undo-tree)
@@ -33,8 +34,27 @@
 (require 'popwin)
 (require 'php-mode)
 (require 'mouse)
+(require 'counsel-gtags)
 
-(setq use-dialog-box t)
+(defun gtags-root-dir ()
+  "Returns GTAGS root directory or nil if doesn't exist."
+  (with-temp-buffer
+    (if (zerop (call-process "global" nil t nil "-pr"))
+        (buffer-substring (point-min) (1- (point-max)))
+      nil)))
+
+(defun gtags-update ()
+  "Make GTAGS incremental update"
+  (call-process "global" nil nil nil "-u"))
+
+(defun gtags-update-hook ()
+  (when (gtags-root-dir)
+    (counsel-gtags-update-tags)))
+
+(add-hook 'after-save-hook #'gtags-update-hook)
+(add-hook 'projectile-before-switch-project-hook #'gtags-create-hook)
+
+(setq mode-line-format "")
 
 (defun kill-ring-save-keep-highlight (beg end)
   "Keep the region active after the kill"
@@ -72,17 +92,6 @@
   "Return non-nil if the cursor is a bar."
   nil)
 
-
-(setq ido-mode nil)
-(setq ivy-re-builders-alist
-      '((t . ivy--regex-fuzzy)))
-
-(projectile-mode 1)
-(ivy-mode 1)
-(delete-selection-mode 1)
-(popwin-mode 1)
-(undo-tree-mode 1)
-
 (defvar killed-file-list nil
   "List of recently killed files.")
 
@@ -104,54 +113,6 @@
   (interactive)
   (text-scale-increase 0))
 
-
-(defun counsel-projectile-ag-function (string extra-ag-args)
-  "Grep in the current directory for STRING.
-If non-nil, EXTRA-AG-ARGS string is appended to `counsel-ag-base-command'."
-  (when (null extra-ag-args)
-    (setq extra-ag-args ""))
-  (if (< (length string) 3)
-      (counsel-more-chars 3)
-    (let ((default-directory (projectile-project-root))
-          (regex (counsel-unquote-regex-parens
-                  (setq ivy--old-re
-                        (ivy--regex string)))))
-      (let ((ag-cmd (format counsel-ag-base-command
-                            (concat extra-ag-args
-                                    " -- "
-                                    (shell-quote-argument regex)))))
-        (counsel--async-command ag-cmd))
-      nil)))
-
-(defun counsel-projectile-ag (&optional initial-input initial-directory extra-ag-args ag-prompt)
-  "Grep for a string in the current directory using ag.
-INITIAL-INPUT can be given as the initial minibuffer input.
-INITIAL-DIRECTORY, if non-nil, is used as the root directory for search.
-EXTRA-AG-ARGS string, if non-nil, is appended to `counsel-ag-base-command'.
-AG-PROMPT, if non-nil, is passed as `ivy-read' prompt argument. "
-  (interactive
-   (list nil
-         (when current-prefix-arg
-           (read-directory-name (concat
-                                 (car (split-string counsel-ag-base-command))
-                                 " in directory: ")))))
-  (ivy-set-prompt 'counsel-ag counsel-prompt-function)
-  (setq counsel--git-grep-dir (or initial-directory default-directory))
-  (ivy-read (or ag-prompt (car (split-string counsel-ag-base-command)))
-            (lambda (string)
-              (counsel-projectile-ag-function string extra-ag-args))
-            :initial-input initial-input
-            :dynamic-collection t
-            :keymap counsel-ag-map
-            :history 'counsel-git-grep-history
-            :action #'counsel-git-grep-action
-            :unwind (lambda ()
-                      (counsel-delete-process)
-                      (swiper--cleanup))
-            :caller 'counsel-ag))
-
-
-
 (ivy-set-actions
  'counsel-projectile-find-file
  '(("j" (lambda (x)
@@ -159,6 +120,17 @@ AG-PROMPT, if non-nil, is passed as `ivy-read' prompt argument. "
             (find-file-other-window
              (projectile-expand-root x))))
     "other window")))
+
+
+(setq ido-mode nil)
+(setq ivy-re-builders-alist
+      '((t . ivy--regex-fuzzy)))
+
+(projectile-mode 1)
+(ivy-mode 1)
+(delete-selection-mode 1)
+(popwin-mode 1)
+(global-undo-tree-mode 1)
 
 
 (defvar tau-minor-mode-map
@@ -179,8 +151,6 @@ AG-PROMPT, if non-nil, is passed as `ivy-read' prompt argument. "
     (define-key map (kbd "s-d") 'mc/mark-next-like-this)
     (define-key map (kbd "C-x") 'kill-region)
     (define-key map (kbd "s-x") 'kill-region)
-    (define-key map (kbd "C-k C-b") 'neotree-toggle)
-    (define-key map (kbd "s-k s-b") 'neotree-toggle)
     (define-key map (kbd "C-S-p") 'counsel-M-x)
     (define-key map (kbd "s-P") 'counsel-M-x)
     (define-key map (kbd "C-p") 'counsel-projectile-find-file)
@@ -224,6 +194,14 @@ AG-PROMPT, if non-nil, is passed as `ivy-read' prompt argument. "
     (define-key map (kbd "s-=")   'text-scale-increase)
     (define-key map (kbd "C-0")   'friendly-text-scale-reset)
     (define-key map (kbd "s-0")   'friendly-text-scale-reset)
+    (define-key map (kbd "C-k C-b") 'neotree-toggle)
+    (define-key map (kbd "s-k s-b") 'neotree-toggle)
+    (define-key map (kbd "C-k C-n") 'tabbar-forward-tab)
+    (define-key map (kbd "s-k s-n") 'tabbar-forward-tab)
+    (define-key map (kbd "C-k C-p") 'tabbar-backward-tab)
+    (define-key map (kbd "s-k s-p") 'tabbar-backward-tab)
+    (define-key map (kbd "C-k C-f") 'counsel-projectile-ag)
+    (define-key map (kbd "s-k s-f") 'counsel-projectile-ag)
     (define-key map (kbd "C-<tab>") 'tabbar-forward-tab)
     (define-key map (kbd "C-S-<tab>")'tabbar-backward-tab)
     (define-key map (kbd "C-<iso-lefttab>")'tabbar-backward-tab)
@@ -232,6 +210,8 @@ AG-PROMPT, if non-nil, is passed as `ivy-read' prompt argument. "
     (define-key map (kbd "\220") 'counsel-M-x)
     (define-key map (kbd "\232") 'undo-tree-redo)
     (define-key map (kbd "\206") 'counsel-projectile-ag)
+    (define-key map (kbd "C-r") 'counsel-gtags-find-symbol)
+    (define-key map (kbd "s-r") 'counsel-gtags-find-symbol)
     (define-key map [remap write-file] nil)
     (define-key mc/keymap (kbd "<return>") 'newline-and-indent)
     (define-key mc/keymap (kbd "<escape>") 'mc/keyboard-quit)
@@ -253,3 +233,14 @@ AG-PROMPT, if non-nil, is passed as `ivy-read' prompt argument. "
 (define-key text-mode-map [menu-bar text] nil)
 (define-key minibuffer-local-completion-map [menu-bar minibuf] nil)
 (define-key minibuffer-local-map [menu-bar minibuf] nil)
+(define-key projectile-command-map [escape] 'minibuffer-keyboard-quit)
+(define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
+(define-key swiper-map [escape] 'minibuffer-keyboard-quit)
+
+(add-hook 'php-mode-hook 'counsel-gtags-mode)
+(add-hook 'markdown-mode-hook 'counsel-gtags-mode)
+
+(require 'tau-interface)
+(require 'tau-fonts)
+(require 'tau-editor)
+(require 'tau-mouse)

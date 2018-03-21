@@ -1,13 +1,89 @@
-(setq frame-title-format (format "%%f - Tau" (system-name)))
-(setq use-dialog-box t)
-(setq inhibit-startup-buffer-menu t)
-(setq inhibit-startup-message t)
-(setq initial-scratch-message nil)
-(setq initial-major-mode 'text-mode)
-(setq inhibit-startup-echo-area-message t)
-(setq-default message-log-max nil)
-(setq tabbar-auto-scroll-flag t)
-(setq ns-use-srgb-colorspace nil)
+
+(setq mode-line-format "Initializing theme...")
+
+(unless (require 'aquamacs-tabbar nil t)
+  (use-package aquamacs-tabbar
+    :ensure t
+    :load-path "quelpa/build/aquamacs-tabbar/"
+    :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
+
+(use-package neotree :ensure t)
+(use-package spaceline :ensure t)
+
+(defun tau--theme (left second-left &rest additional-segments)
+  "Convenience function for the spacemacs and emacs themes."
+  (spaceline-compile
+    `(,left
+      (anzu :priority 95)
+      auto-compile
+      ,second-left
+      (major-mode :priority 79)
+      (process :when active)
+      ((flycheck-error flycheck-warning flycheck-info)
+       :when active
+       :priority 89)
+      (minor-modes :when active
+                   :priority 9)
+      (mu4e-alert-segment :when active)
+      (erc-track :when active)
+      (version-control :when active
+                       :priority 78)
+      (org-pomodoro :when active)
+      (org-clock :when active)
+      nyan-cat)
+    `(which-function
+      (python-pyvenv :fallback python-pyenv)
+      (purpose :priority 94)
+      (battery :when active)
+      (selection-info :priority 95)
+      input-method
+      ((buffer-encoding-abbrev
+        point-position
+        line-column)
+       :separator " · "
+       :priority 96)
+      (global :when active)
+      ,@additional-segments
+      (buffer-position :priority 99)
+      (hud :priority 99)))
+
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+
+(defun spaceline-tau-theme (&rest additional-segments)
+  "Install the modeline used by Spacemacs.
+
+ADDITIONAL-SEGMENTS are inserted on the right, between `global' and
+`buffer-position'."
+  (apply 'tau--theme
+         '((persp-name
+            workspace-number
+            window-number)
+           :fallback evil-state
+           :face highlight-face
+           :priority 100)
+         '((buffer-modified buffer-size buffer-id remote-host)
+           :priority 98)
+          additional-segments))
+
+(require 'spaceline)
+(require 'spaceline-config)
+;;Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
+;;butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
+;;utf-8."
+(setq powerline-default-separator 'zigzag)
+(setq powerline-height 20)
+(spaceline-toggle-buffer-id-off)
+(spaceline-toggle-minor-modes-off)
+(spaceline-toggle-buffer-modified-off)
+(spaceline-toggle-buffer-size-off)
+(spaceline-toggle-buffer-encoding-on)
+(spaceline-toggle-buffer-position-off)
+(spaceline-toggle-hud-on)
+
+(spaceline-define-segment hud
+  "A HUD that shows which part of the buffer is currently visible."
+  (powerline-hud default-face highlight-face)
+  :tight t)
 
 (defun display-startup-echo-area-message ()
   (message ""))
@@ -22,24 +98,12 @@
   (let ((last-nonmenu-event nil))
     ad-do-it))
 
-(if window-system
-    (tool-bar-mode -1))
-
 (eval-after-load 'help-mode
   (lambda ()
     (define-key help-mode-map [menu-bar help-mode] nil)
     (define-key help-mode-map [menu-bar Help-Mode] nil)
     ))
 
-
-(unless (require 'aquamacs-tabbar nil t)
-  (use-package aquamacs-tabbar
-    :ensure t
-    :load-path "quelpa/build/aquamacs-tabbar/"
-    :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
-(use-package monokai-theme :ensure t)
-
-(use-package neotree :ensure t)
 (require 'neotree)
 (require 'aquamacs-tabbar)
 
@@ -47,11 +111,6 @@
 (setq neo-smart-open t)
 (setq neo-show-hidden-files t)
 
-(defadvice kill-buffer (before kill-buffer-before-advice activate)
-  (let ((buffer-to-kill (ad-get-arg 0)))
-    (if (equal buffer-to-kill "*scratch*")
-        (bury-buffer)
-      )))
 
     (setq tabbar-buffer-groups-function
           (lambda () (list "All Buffers")))
@@ -80,9 +139,6 @@ Default is t."
                 tabbar-scroll-right-button (quote ((" » ") " » ")))))
     :group 'tabbar)
 
-(neotree-toggle)
-(new-empty-buffer)
-
 ;; Don't show *Buffer list* when opening multiple files at the same time.
 (setq inhibit-startup-buffer-menu t)
 
@@ -91,44 +147,6 @@ Default is t."
 
 (add-hook 'emacs-startup-hook
           (lambda () (delete-other-windows)) t)
-
-(defun spaceline-tau-theme (&rest additional-segments)
-  "Install the modeline used by Spacemacs.
-
-ADDITIONAL-SEGMENTS are inserted on the right, between `global' and
-`buffer-position'."
-  (apply 'spaceline--theme
-         '((persp-name
-            workspace-number
-            window-number)
-           :fallback evil-state
-           :separator "|"
-           :face highlight-face)
-         '(buffer-modified buffer-size buffer-id remote-host)
-         additional-segments))
-
-
-(require 'spaceline-config)
-(setq powerline-default-separator 'zigzag)
-(setq powerline-height 26)
-(spaceline-toggle-buffer-id-off)
-(spaceline-toggle-minor-modes-off)
-(spaceline-toggle-buffer-modified-off)
-(spaceline-toggle-buffer-size-off)
-(spaceline-toggle-buffer-encoding-on)
-(spaceline-toggle-buffer-position-off)
-(spaceline-toggle-hud-on)
-(load-theme 'monokai t)
-
-(spaceline-define-segment hud
-  "A HUD that shows which part of the buffer is currently visible."
-  (powerline-hud highlight-face default-face)
-  :tight t)
-
-(spaceline-tau-theme)
-
-(spaceline-compile)
-
 
  (when (require 'tabbar nil t)
    ;; Enable tabbars globally:
@@ -164,7 +182,7 @@ ADDITIONAL-SEGMENTS are inserted on the right, between `global' and
    ;; Eventually, switch on this global filter for tabbars:
    (global-tabbar-on-term-only-mode 1))
 
-
-(menu-bar-mode -1)
+(spaceline-tau-theme)
+(spaceline-compile)
 
 (provide 'tau-interface)

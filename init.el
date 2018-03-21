@@ -7,14 +7,6 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
-
-(set-face-attribute 'mode-line nil  :height 85)
-(defun my-minibuffer-setup ()
-       (set (make-local-variable 'face-remapping-alist)
-          '((default :height 0.9))))
-
-(add-hook 'minibuffer-setup-hook 'my-minibuffer-setup)
-
 ;; Use mode line to display startup messages
  (setq mode-line-format "Initializing...")
 

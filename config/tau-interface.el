@@ -1,15 +1,6 @@
 
 (setq mode-line-format "Initializing theme...")
 
-(unless (require 'aquamacs-tabbar nil t)
-  (use-package aquamacs-tabbar
-    :ensure t
-    :load-path "quelpa/build/aquamacs-tabbar/"
-    :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
-
-(use-package neotree :ensure t)
-(use-package spaceline :ensure t)
-
 (defun tau--theme (left second-left &rest additional-segments)
   "Convenience function for the spacemacs and emacs themes."
   (spaceline-compile
@@ -104,9 +95,6 @@ ADDITIONAL-SEGMENTS are inserted on the right, between `global' and
     (define-key help-mode-map [menu-bar Help-Mode] nil)
     ))
 
-(require 'neotree)
-(require 'aquamacs-tabbar)
-
 (setq projectile-switch-project-action 'neotree-projectile-action)
 (setq neo-smart-open t)
 (setq neo-show-hidden-files t)
@@ -139,6 +127,17 @@ Default is t."
                 tabbar-scroll-right-button (quote ((" » ") " » ")))))
     :group 'tabbar)
 
+;; Removes *scratch* from buffer after the mode has been set.
+(defun remove-scratch-buffer ()
+  (if (get-buffer "*scratch*")
+      (kill-buffer "*scratch*")))
+
+(add-hook 'after-change-major-mode-hook 'remove-scratch-buffer)
+
+;; Removes *messages* from the buffer.
+(setq-default message-log-max nil)
+(kill-buffer "*Messages*")
+
 ;; Don't show *Buffer list* when opening multiple files at the same time.
 (setq inhibit-startup-buffer-menu t)
 
@@ -160,9 +159,15 @@ Default is t."
      :keymap nil
      (if tabbar-on-term-only-mode
          ;; filter is enabled
-         (if (eq major-mode 'neotree-mode); <- this can be easily customizable...
+         (if (or (eq major-mode 'neotree-mode)); <- this can be easily customizable...
              (tabbar-local-mode 1)
              (tabbar-local-mode -1)
+           )
+         (if (or (eq major-mode 'ansi-term-mode) (eq major-mode 'term-mode)); <- this can be easily customizable...
+             (tau-minor-mode -1)
+           )
+         (if (not (or (eq major-mode 'ansi-term-mode) (eq major-mode 'term-mode))); <- this can be easily customizable...
+             (tau-minor-mode 1)
            )
        ;; always activate tabbar locally when we disable the minor mode:
        (tabbar-local-mode 1)))
@@ -184,5 +189,12 @@ Default is t."
 
 (spaceline-tau-theme)
 (spaceline-compile)
+
+;; Removes *Completions* from buffer after you've opened a file.
+(add-hook 'minibuffer-exit-hook
+      '(lambda ()
+         (let ((buffer "*Completions*"))
+           (and (get-buffer buffer)
+                (kill-buffer buffer)))))
 
 (provide 'tau-interface)

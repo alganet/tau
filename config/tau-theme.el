@@ -57,11 +57,9 @@
  '(diff-removed ((t (:foreground "#F92672" :weight bold))))
  '(escape-glyph ((t (:foreground "#E6DB74"))))
  '(minibuffer-prompt ((t (:foreground "#66D9EF"))))
- '(mode-line ((t (:foreground "#F8F8F2" :background "#000000"
-                  :box (:line-width 1 :color "#000000" :style released-button)))))
+ '(mode-line ((t (:foreground "#F8F8F2" :background "#000000"))))
  '(mode-line-buffer-id ((t (:foreground nil :background "#000000" :weight semi-bold))))
- '(mode-line-inactive ((t (:foreground "#BCBCBC" :background "#000000"
-                           ':box (:line-width 1 :color "#232526")))))
+ '(mode-line-inactive ((t (:foreground "#BCBCBC" :background "#000000"))))
  '(mode-line-mousable ((t (:foreground "#BCBCBC" :background "#000000"))))
  '(mode-line-mousable-minor-mode ((t (:foreground "#BCBCBC" :background "#000000"))))
  '(font-lock-builtin-face ((t (:foreground "#A6E22E"))))
@@ -136,8 +134,7 @@
  '(rainbow-delimiters-depth-9-face ((t (:foreground "#BCA3A3"))))
  '(secondary-selection ((t (:background "#272822"))))
  '(shadow ((t (:foreground "#465457"))))
- '(spaceline-highlight-face ((t (:foreground "#F8F8F2" :background "#000000"
-                  :box (:line-width 1 :color "#000000" :style released-button)))))
+ '(spaceline-highlight-face ((t (:foreground "#F8F8F2" :background "#000000"))))
  '(show-paren-match-face ((t (:foreground "#000000" :background "#FD971F"))))
  '(show-paren-mismatch-face ((t (:foreground "#960050" :background "#1E0010"))))
  '(undo-tree-visualizer-active-branch-face ((t (:inherit default))))

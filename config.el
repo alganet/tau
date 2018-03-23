@@ -4,6 +4,7 @@
 ;; ---------------
 
 (setq auto-save-default nil)
+
 (setq mode-line-format "Initializing packages...")
 (use-package swiper :ensure t)
 (use-package exec-path-from-shell :ensure t)
@@ -18,7 +19,13 @@
 (use-package counsel-projectile :ensure t)
 (use-package php-mode :ensure t)
 (use-package markdown-mode :ensure t)
-(use-package counsel-gtags :ensure t)
+(use-package neotree :ensure t)
+(use-package spaceline :ensure t)
+(unless (require 'aquamacs-tabbar nil t)
+  (use-package aquamacs-tabbar
+    :ensure t
+    :load-path "quelpa/build/aquamacs-tabbar/"
+    :quelpa (aquamacs-tabbar :fetcher github :repo "alganet/tabbar")))
 
 
 (require 'undo-tree)
@@ -33,26 +40,15 @@
 (require 'drag-stuff)
 (require 'popwin)
 (require 'php-mode)
-(require 'mouse)
-(require 'counsel-gtags)
+(require 'neotree)
+(require 'aquamacs-tabbar)
+(require 'term)
 
-(defun gtags-root-dir ()
-  "Returns GTAGS root directory or nil if doesn't exist."
-  (with-temp-buffer
-    (if (zerop (call-process "global" nil t nil "-pr"))
-        (buffer-substring (point-min) (1- (point-max)))
-      nil)))
-
-(defun gtags-update ()
-  "Make GTAGS incremental update"
-  (call-process "global" nil nil nil "-u"))
-
-(defun gtags-update-hook ()
-  (when (gtags-root-dir)
-    (counsel-gtags-update-tags)))
-
-(add-hook 'after-save-hook #'gtags-update-hook)
-(add-hook 'projectile-before-switch-project-hook #'gtags-create-hook)
+;; disable cua and transient mark modes in term-char-mode
+(defadvice term-char-mode (after term-char-mode-fixes ())
+  (set (make-local-variable 'cua-mode) nil)
+  (set (make-local-variable 'transient-mark-mode) nil))
+(ad-activate 'term-char-mode)
 
 (setq mode-line-format "")
 
@@ -74,20 +70,14 @@
              (unless (< arg 0)
                (mc/cycle-forward))))
 
-(advice-add 'mc/skip-to-next-like-this
-          :before
-          '(lambda()(interactive)
-             (when (> (mc/num-cursors) 1)
-               (mc/cycle-backward))))
-
 (defun mc/keyboard-quit ()
   "Deactivate mark if there are any active, otherwise exit multiple-cursors-mode."
   (interactive)
-  (if (not (use-region-p))
+    (if (not (use-region-p))
       (multiple-cursors-mode 0)
-    (deactivate-mark))
-    (keyboard-escape-quit)
-  )
+      (deactivate-mark))
+    (keyboard-escape-quit))
+
 (defun mc/cursor-is-bar ()
   "Return non-nil if the cursor is a bar."
   nil)
@@ -132,38 +122,49 @@
 (popwin-mode 1)
 (global-undo-tree-mode 1)
 
-
 (defvar tau-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<escape>") 'mc/keyboard-quit)
+    (define-key map (kbd "ESC ESC") 'mc/keyboard-quit)
+    (define-key map (kbd "C-c") 'kill-ring-save-keep-highlight)
+    (define-key map (kbd "C-d") 'mc/mark-next-like-this)
+    (define-key map (kbd "C-S-<down>")   'drag-stuff-down)
+    (define-key map (kbd "C-s") 'save-buffer)
+    (define-key map (kbd "C-S-s") 'write-file)
+    (define-key map (kbd "C-S-<up>")   'drag-stuff-up)
+    (define-key map (kbd "C-S-z") 'undo-tree-redo)
+    (define-key map (kbd "C-v") 'yank)
+    (define-key map (kbd "C-x") 'kill-region)
+    (define-key map (kbd "C-z") 'undo-tree-undo)
+    (define-key map (kbd "s-c") 'kill-ring-save-keep-highlight)
+    (define-key map (kbd "s-d") 'mc/mark-next-like-this)
+    (define-key map (kbd "s-S") 'write-file)
+    (define-key map (kbd "s-v") 'yank)
+    (define-key map (kbd "s-x") 'kill-region)
+    (define-key map (kbd "s-Z") 'undo-tree-redo)
+    (define-key map (kbd "s-z") 'undo-tree-undo)
+    (define-key map [remap write-file] nil)
+    (define-key mc/keymap (kbd "<return>") 'newline-and-indent)
+    map)
+  "tau-minor-mode keymap.")
+
+(defvar tau-ui-mode-map
   (let ((map (make-sparse-keymap)))
     (setq mac-command-modifier 'super)
     (setq mac-option-modifier 'meta)
     (setq mac-control-modifier 'control)
     (setq mac-shift-modifier 'shift)
-    (define-key map (kbd "C-S-<up>")   'drag-stuff-up)
-    (define-key map (kbd "C-S-<down>")   'drag-stuff-down)
+    (define-key map (kbd "<f12>") 'tau-term-open)
     (define-key map (kbd "<escape>") 'mc/keyboard-quit)
     (define-key map (kbd "ESC ESC") 'mc/keyboard-quit)
-    (define-key map (kbd "C-c") 'kill-ring-save-keep-highlight)
-    (define-key map (kbd "s-c") 'kill-ring-save-keep-highlight)
-    (define-key map (kbd "C-v") 'yank)
-    (define-key map (kbd "s-v") 'yank)
-    (define-key map (kbd "C-d") 'mc/mark-next-like-this)
-    (define-key map (kbd "s-d") 'mc/mark-next-like-this)
-    (define-key map (kbd "C-x") 'kill-region)
-    (define-key map (kbd "s-x") 'kill-region)
     (define-key map (kbd "C-S-p") 'counsel-M-x)
     (define-key map (kbd "s-P") 'counsel-M-x)
     (define-key map (kbd "C-p") 'counsel-projectile-find-file)
     (define-key map (kbd "s-p") 'counsel-projectile-find-file)
-    (define-key map (kbd "C-z") 'undo-tree-undo)
-    (define-key map (kbd "C-S-z") 'undo-tree-redo)
-    (define-key map (kbd "s-z") 'undo-tree-undo)
-    (define-key map (kbd "s-Z") 'undo-tree-redo)
     (define-key map (kbd "M-x") 'counsel-M-x)
-    (define-key map (kbd "C-a") 'mark-whole-buffer)
-    (define-key map (kbd "C-s") 'save-buffer)
     (define-key map (kbd "C-f") 'swiper)
     (define-key map (kbd "s-a") 'mark-whole-buffer)
+    (define-key map (kbd "C-a") 'mark-whole-buffer)
     (define-key map (kbd "s-s") 'save-buffer)
     (define-key map (kbd "s-f") 'swiper)
     (define-key map (kbd "C-S-f") 'counsel-projectile-ag)
@@ -174,18 +175,16 @@
     (define-key map (kbd "s-q") 'kill-emacs)
     (define-key map (kbd "C-n") 'new-empty-buffer)
     (define-key map (kbd "s-n") 'new-empty-buffer)
-    (define-key map (kbd "C-S-s") 'write-file)
-    (define-key map (kbd "s-S") 'write-file)
     (define-key map (kbd "C-S-n") 'new-frame)
     (define-key map (kbd "s-N") 'new-frame)
     (define-key map (kbd "C-S-w") 'delete-frame)
     (define-key map (kbd "s-W") 'delete-frame)
     (define-key map (kbd "C-S-t") 'reopen-killed-file)
     (define-key map (kbd "s-T") 'reopen-killed-file)
-    (define-key map (kbd "C-w") 'tabbar-close-tab)
-    (define-key map (kbd "s-w") 'tabbar-close-tab)
     (define-key map (kbd "C-<f4>") 'tabbar-close-tab)
     (define-key map (kbd "s-<f4>") 'tabbar-close-tab)
+    (define-key map (kbd "C-w") 'tabbar-close-tab)
+    (define-key map (kbd "s-w") 'tabbar-close-tab)
     (define-key map (kbd "C--")   'text-scale-decrease)
     (define-key map (kbd "s--")   'text-scale-decrease)
     (define-key map (kbd "C-+")   'text-scale-increase)
@@ -210,20 +209,26 @@
     (define-key map (kbd "\220") 'counsel-M-x)
     (define-key map (kbd "\232") 'undo-tree-redo)
     (define-key map (kbd "\206") 'counsel-projectile-ag)
-    (define-key map (kbd "C-r") 'counsel-gtags-find-symbol)
-    (define-key map (kbd "s-r") 'counsel-gtags-find-symbol)
     (define-key map [remap write-file] nil)
-    (define-key mc/keymap (kbd "<return>") 'newline-and-indent)
-    (define-key mc/keymap (kbd "<escape>") 'mc/keyboard-quit)
     map)
-  "tau-minor-mode keymap.")
+  "tau-ui-mode keymap.")
 
 (define-minor-mode tau-minor-mode
   "A minor mode so that my key settings override annoying major modes."
   :init-value t
   :lighter " tau")
 
-(tau-minor-mode 1)
+(define-minor-mode tau-ui-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " tau")
+
+(define-minor-mode tau-shell-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value -1
+  :lighter " tau")
+
+(define-key global-map (kbd "C-k") nil)
 (define-key global-map [menu-bar file] nil)
 (define-key global-map [menu-bar edit] nil)
 (define-key global-map [menu-bar options] nil)
@@ -236,9 +241,52 @@
 (define-key projectile-command-map [escape] 'minibuffer-keyboard-quit)
 (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
 (define-key swiper-map [escape] 'minibuffer-keyboard-quit)
+(define-key term-mode-map (kbd "<escape>") 'term-send-ESC)
+(define-key term-mode-map (kbd "ESC ESC") 'term-send-ESC)
+(define-key term-mode-map (kbd "C-d") 'term-send-C-d)
+(define-key term-mode-map (kbd "C-c") 'term-send-C-c)
+(define-key term-mode-map (kbd "C-r") 'term-send-C-r)
+(define-key term-mode-map (kbd "C-z") 'term-send-C-z)
+(define-key term-mode-map (kbd "C-SPC") 'term-send-C-SPC)
 
-(add-hook 'php-mode-hook 'counsel-gtags-mode)
-(add-hook 'markdown-mode-hook 'counsel-gtags-mode)
+(defun term-send-C-SPC ()
+  "Send C-SPC in term mode."
+  (interactive)
+  (term-send-raw-string "\C- "))
+
+(defun term-send-C-d ()
+  "Send C-d in term mode."
+  (interactive)
+  (term-send-raw-string "\C-d"))
+
+(defun term-send-C-c ()
+  "Send C-c in term mode."
+  (interactive)
+  (term-send-raw-string "\C-c"))
+
+(defun term-send-C-r ()
+  "Send C-r in term mode."
+  (interactive)
+  (term-send-raw-string "\C-r"))
+
+(defun term-send-C-z ()
+  "Send C-z in term mode."
+  (interactive)
+  (term-send-raw-string "\C-z"))
+
+(defun term-send-ESC ()
+  "Send ESC in term mode."
+  (interactive)
+  (term-send-raw-string "\e"))
+
+(defun tau-term-open ()
+  (interactive)
+  (if (get-buffer "*Terminal*")
+    (switch-to-buffer "*Terminal*")
+    (ansi-term "sh" "Terminal")))
+
+(tau-ui-mode 1)
+(tau-minor-mode 1)
 
 (require 'tau-interface)
 (require 'tau-fonts)

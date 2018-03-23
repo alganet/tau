@@ -21,8 +21,9 @@
   (scroll-bar-mode -1))
 
 ;; Use mouse
-(mouse-wheel-mode t)
-(xterm-mouse-mode t)
+(if window-system
+  (mouse-wheel-mode t)
+  (xterm-mouse-mode t))
 
 ;; Turn off unwanted modes when they're available
 (if (functionp 'menu-bar-mode)

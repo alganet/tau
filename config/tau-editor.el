@@ -1,17 +1,30 @@
-(setq linum-format "%4d ")
-(setq-default truncate-lines t)
-(setq auto-save-default nil)
-(setq-default cursor-type 'box)
+(defvar tau/esc-quit-delay 0.01)
+(defvar tau/esc-quit-minibuffer-delay 0.1)
+(defvar tau/esc-quit-wait-delay 0.2)
+(defvar tau/escaping nil)
 
-(cua-selection-mode t)
-(column-number-mode t)
-(ido-mode t)
-(show-paren-mode t)
+(transient-mark-mode 1)
+(delete-selection-mode 1)
+(column-number-mode 1)
+(fringe-mode '(0 . 0))
 
-(global-font-lock-mode t)
+(defvar my-linum-format-string " %4d")
+(add-hook 'linum-before-numbering-hook 'my-linum-get-format-string)
+(defun my-linum-get-format-string ()
 
-(add-hook 'text-mode-hook 'linum-mode)
-(add-hook 'prog-mode-hook 'linum-mode)
-(linum-mode t)
+(let* ((width (length (number-to-string
+                      (count-lines (point-min) (point-max)))))
+      (format (concat " %" (number-to-string (min 2 width)) "d")))
+ (setq my-linum-format-string format)))
+
+(defun my-linum-format (line-number)
+	(concat
+		(propertize (format my-linum-format-string line-number) 'face 'linum)
+		(propertize "\u2502 " 'face 'fringe)))
+
+(setq linum-format 'my-linum-format)
+(global-linum-mode t)
+
+(set-default 'truncate-lines t)
 
 (provide 'tau-editor)

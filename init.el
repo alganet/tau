@@ -1,5 +1,6 @@
 (setq gc-cons-threshold 10000000)
-(setq warning-minimum-level :emergency)
+(setq warning-minimum-level :warning)
+(setq ns-use-srgb-colorspace nil)
 (setq-default message-log-max nil)
 (setq initial-major-mode 'text-mode)
 (setq initial-scratch-message nil)
@@ -12,7 +13,7 @@
 (setq auto-save-default nil)
 (setq use-dialog-box nil)
 (setq custom-safe-themes t)
-
+(setq header-line-format '(" the τau editor "))
 (setq mode-line-format '(" τau is starting :) "))
 
 (if window-system
@@ -214,8 +215,14 @@
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 
-(set-face-attribute 'variable-pitch t :font "Sans Serif-10" )
-(set-face-attribute 'variable-pitch nil :font "Sans Serif-10" )
+
+    (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+
+    (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+
+    (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+
+    (setq scroll-step 1) ;; keyboard scroll one line at a time
 
 (require 'tau-editor)
 (require 'tau-vendor)

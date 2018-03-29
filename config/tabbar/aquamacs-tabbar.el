@@ -469,7 +469,7 @@ SELECTED-P tells if the item is seleceted."
         (intern (format "powerline-%s-%s" powerline-default-separator dir))))
      (normalize-face (or normalize-face face)))
       (propertize tabbar-decorator
-      'display (tabbar-normalize-image (funcall fun background-face face 30) 0 normalize-face)
+      'display (tabbar-normalize-image (funcall fun background-face face 20) 0 normalize-face)
       'face normalize-face))))
 
 (defun tabbar-line-left-separator (selected-p face background-face)

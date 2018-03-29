@@ -9,7 +9,10 @@
     (diminish 'undo-tree-mode)))
 
 (use-package counsel :ensure t
-	     :delight)
+       :delight)
+
+(use-package smooth-scrolling :ensure t
+       :delight)
 
 (use-package expand-region :ensure t
 	     :delight)
@@ -74,18 +77,19 @@ nil)
 
 (use-package ivy  :ensure t
   :delight
-  :config (progn 
+  :config (progn
     (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
     (ivy-mode 1)))
 
 (use-package spaceline :ensure t
   :delight
-  :config (progn 
+  :config (progn
     (require 'spaceline-config)
 
     (require 'powerline)
+    (setq powerline-height 20)
     (setq powerline-default-separator 'bar)
-    (setq spaceline-separator-dir-left '(left . right))
+    (setq spaceline-separator-dir-left '(right . left))
     (setq spaceline-separator-dir-right '(left . right))
     (setq powerline-utf-8-separator-left #x2502)
     (setq powerline-utf-8-separator-right #x2502)
@@ -145,12 +149,6 @@ nil)
      )
     )
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))))
-
-
-
-
-
-
 
 
 (require 'tabbar)
@@ -242,17 +240,5 @@ Default is t."
 
 (add-hook 'emacs-startup-hook
           (lambda () (delete-other-windows)) t)
-
-
-
-
-
-
-
-
-
-
-
-
 
 (provide 'tau-vendor)

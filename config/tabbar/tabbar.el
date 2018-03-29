@@ -572,29 +572,21 @@ current cached copy."
      :inherit mode-line-inactive
      :italic nil
      :box nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      )
     (((class mono) (background light))
      :inherit mode-line-inactive
      :italic nil
      :box nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      )
     (((class mono) (background dark))
      :inherit mode-line-inactive
      :italic nil
      :box nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      )
     (t
      :inherit mode-line-inactive
      :italic nil
      :box nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      ))
   "Default face used in the tab bar."
   :group 'tabbar)
@@ -604,8 +596,6 @@ current cached copy."
      :inherit mode-line-inactive
      :box nil
      :italic nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      :underline nil
      ))
   "Face used for unselected tabs."
@@ -615,8 +605,6 @@ current cached copy."
   `((t
      :inherit default
      :italic nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      :underline nil
      ))
   "Face used for the selected tab."
@@ -662,8 +650,6 @@ current cached copy."
   `((t
      :inherit mode-line-highlight
      :italic nil
-     :family ,(face-attribute 'variable-pitch :family)
-     :height ,(face-attribute 'variable-pitch :height)
      :underline nil
      ))
   "Face used to highlight a tab during mouse-overs."

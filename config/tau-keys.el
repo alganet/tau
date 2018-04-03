@@ -39,8 +39,8 @@
 (define-key tau-map (kbd "C-g") 'goto-line)
 (define-key tau-map (kbd "C-S-<up>") 'move-region-up)
 (define-key tau-map (kbd "C-S-<down>") 'move-region-down)
-(define-key tau-map (kbd "C-S-d") 'duplicate-line)
-(define-key tau-map (kbd "C-S-k") 'kill-whole-line)
+(define-key tau-map (kbd "C-S-d") 'duplicate-current-line-or-region)
+(define-key tau-map (kbd "C-S-k") 'remove-current-line-or-region)
 
 (define-key mc/keymap (kbd "<return>") nil)
 (define-key swiper-map (kbd "C-k e <escape>") 'tau/esc-minibuffer-quit)

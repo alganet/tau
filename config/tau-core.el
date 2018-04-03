@@ -1,4 +1,3 @@
-
 (eval-when-compile
   ;; Install use-package if not available
   (unless  (require 'use-package nil t)
@@ -129,26 +128,41 @@
             (transpose-lines arg))
        (forward-line -1)))))
 
-(defun duplicate-line()
-  (interactive)
-  (move-beginning-of-line 1)
-  (kill-line)
-  (yank)
-  (open-line 1)
-  (next-line 1)
-  (yank)
-)
+(defun duplicate-current-line-or-region (arg)
+  (interactive "p")
+  (let (beg end (origin (point)))
+    (if (and mark-active (> (point) (mark)))
+        (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (let ((region (buffer-substring-no-properties beg end)))
+      (dotimes (i arg)
+        (goto-char end)
+        (newline)
+        (insert region)
+        (setq end (point)))
+      (goto-char (+ origin (* (length region) arg) arg)))))
 
+(defun remove-current-line-or-region (arg)
+  (interactive "p")
+  (let (beg end)
+    (if (and mark-active (> (point) (mark))) (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (delete-region beg end)
+    (kill-whole-line)
+  ))
+  
 (defun move-region-down (arg)
-   "Move region (transient-mark-mode active) or current line
-  arg lines down."
    (interactive "*p")
    (move-text-internal arg)
    (indent-according-to-mode))
 
 (defun move-region-up (arg)
-   "Move region (transient-mark-mode active) or current line
-  arg lines up."
    (interactive "*p")
    (move-text-internal (- arg))
    (indent-according-to-mode))

@@ -37,6 +37,8 @@
 (define-key tau-map (kbd "C-S-f") 'counsel-git-grep)
 (define-key tau-map (kbd "C-n") 'new-tab)
 (define-key tau-map (kbd "C-g") 'goto-line)
+(define-key tau-map (kbd "S-M-<up>") 'move-line-up)
+(define-key tau-map (kbd "S-M-<down>") 'move-line-down)
 
 (define-key mc/keymap (kbd "<return>") nil)
 (define-key swiper-map (kbd "C-k e <escape>") 'tau/esc-minibuffer-quit)

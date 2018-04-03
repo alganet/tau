@@ -202,7 +202,7 @@
     `(file-name-shadow ((,class (:inherit shadow))))
     `(header-line ((,class (:foreground ,nord4 :background ,nord2))))
     `(help-argument-name ((,class (:foreground ,nord8))))
-    `(highlight ((,class (:foreground ,nord8 :background ,nord2))))
+    `(highlight ((,class (:foreground ,nord2 :background ,nord6))))
     `(hl-line ((,class (:background ,nord1))))
     `(info-menu-star ((,class (:foreground ,nord9))))
     `(isearch ((,class (:foreground ,nord0 :background ,nord8))))

@@ -41,9 +41,18 @@
 (define-key ivy-minibuffer-map (kbd "C-k e <escape>") 'tau/esc-minibuffer-quit)
 (define-key minibuffer-local-completion-map (kbd "C-k e <escape>") 'tau/esc-minibuffer-quit)
 (define-key minibuffer-local-map (kbd "C-k e <escape>") 'tau/esc-minibuffer-quit)
+
 (define-key swiper-map (kbd "<escape>") 'tau/esc-minibuffer-quit)
 (define-key ivy-minibuffer-map (kbd "<escape>") 'tau/esc-minibuffer-quit)
 (define-key minibuffer-local-completion-map (kbd "<escape>") 'tau/esc-minibuffer-quit)
 (define-key minibuffer-local-map (kbd "<escape>") 'tau/esc-minibuffer-quit)
+
+(define-key ivy-minibuffer-map [remap tau/tab] 'ivy-partial-or-done)
+(define-key counsel-find-file-map [remap tau/tab] 'ivy-partial-or-done)
+(define-key counsel-projectile-switch-to-buffer-map [remap tau/tab] 'ivy-partial-or-done)
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map [remap tau/tab] nil)))
 
 (provide 'tau-keys)

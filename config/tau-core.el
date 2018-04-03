@@ -150,6 +150,7 @@
 
     (setq scroll-step 1) ;; keyboard scroll one line at a time
 
+(require 'eshell)
 (require 'tau-editor)
 (require 'tau-vendor)
 (require 'tau-keys)

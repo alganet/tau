@@ -129,6 +129,16 @@
             (transpose-lines arg))
        (forward-line -1)))))
 
+(defun duplicate-line()
+  (interactive)
+  (move-beginning-of-line 1)
+  (kill-line)
+  (yank)
+  (open-line 1)
+  (next-line 1)
+  (yank)
+)
+
 (defun move-region-down (arg)
    "Move region (transient-mark-mode active) or current line
   arg lines down."

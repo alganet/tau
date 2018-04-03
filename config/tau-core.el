@@ -159,13 +159,11 @@
   
 (defun move-region-down (arg)
    (interactive "*p")
-   (move-text-internal arg)
-   (indent-according-to-mode))
+   (move-text-internal arg))
 
 (defun move-region-up (arg)
    (interactive "*p")
-   (move-text-internal (- arg))
-   (indent-according-to-mode))
+   (move-text-internal (- arg)))
 
 (require 'undo-tree)
 

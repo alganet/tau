@@ -155,5 +155,6 @@
 (require 'tau-keys)
 (load-theme 'nord)
 (redisplay t)
+(projectile-global-mode 1)
 (global-tau-mode 1)
 (provide 'tau-core)

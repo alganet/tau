@@ -35,6 +35,8 @@
 (define-key tau-map (kbd "C-f") 'counsel-grep-or-swiper)
 (define-key tau-map (kbd "C-p") 'counsel-projectile-find-file)
 (define-key tau-map (kbd "C-S-f") 'counsel-git-grep)
+(define-key tau-map (kbd "C-n") 'new-tab)
+(define-key tau-map (kbd "C-g") 'goto-line)
 
 (define-key mc/keymap (kbd "<return>") nil)
 (define-key swiper-map (kbd "C-k e <escape>") 'tau/esc-minibuffer-quit)

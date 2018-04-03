@@ -1,4 +1,3 @@
-
 (eval-when-compile
   ;; Install use-package if not available
   (unless  (require 'use-package nil t)
@@ -108,6 +107,64 @@
   (interactive)
   (shift-region -1))
 
+(defun move-text-internal (arg)
+   (cond
+    ((and mark-active transient-mark-mode)
+     (if (> (point) (mark))
+            (exchange-point-and-mark))
+     (let ((column (current-column))
+              (text (delete-and-extract-region (point) (mark))))
+       (forward-line arg)
+       (move-to-column column t)
+       (set-mark (point))
+       (insert text)
+       (exchange-point-and-mark)
+       (setq deactivate-mark nil)))
+    (t
+     (beginning-of-line)
+     (when (or (> arg 0) (not (bobp)))
+       (forward-line)
+       (when (or (< arg 0) (not (eobp)))
+            (transpose-lines arg))
+       (forward-line -1)))))
+
+(defun duplicate-current-line-or-region (arg)
+  (interactive "p")
+  (let (beg end (origin (point)))
+    (if (and mark-active (> (point) (mark)))
+        (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (let ((region (buffer-substring-no-properties beg end)))
+      (dotimes (i arg)
+        (goto-char end)
+        (newline)
+        (insert region)
+        (setq end (point)))
+      (goto-char (+ origin (* (length region) arg) arg)))))
+
+(defun remove-current-line-or-region (arg)
+  (interactive "p")
+  (let (beg end)
+    (if (and mark-active (> (point) (mark))) (exchange-point-and-mark))
+    (setq beg (line-beginning-position))
+    (if mark-active
+        (exchange-point-and-mark))
+    (setq end (line-end-position))
+    (delete-region beg end)
+    (kill-whole-line)
+  ))
+  
+(defun move-region-down (arg)
+   (interactive "*p")
+   (move-text-internal arg))
+
+(defun move-region-up (arg)
+   (interactive "*p")
+   (move-text-internal (- arg)))
+
 (require 'undo-tree)
 
 (global-undo-tree-mode)
@@ -156,5 +213,6 @@
 (require 'tau-keys)
 (load-theme 'nord)
 (redisplay t)
+(projectile-global-mode 1)
 (global-tau-mode 1)
 (provide 'tau-core)

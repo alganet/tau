@@ -63,6 +63,9 @@
 ;; Load themes from config directory
 (add-to-list 'custom-theme-load-path user-theme-directory)
 
+;; Maximize on start
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 ;; Load elpa packages from vendor dir
 (setq package-user-dir
   (expand-file-name "vendor/elpa" user-emacs-directory))

@@ -1,14 +1,18 @@
 
 
 (define-key tau-map "\C-k" nil)
+(define-key tau-map [tab] 'tau/tab)
+(define-key tau-map "\t" 'tau/tab)
+(define-key tau-map (kbd "<backtab>") 'tau/backtab)
+(define-key tau-map (kbd "<S-iso-lefftab>") 'tau/backtab)
 (define-key tau-map (kbd "C-k C-p") 'counsel-M-x)
 
 ;; All ESC prefix inside C-k e combo
 (define-key tau-map "\C-k\ e" nil)
-(define-key tau-map (kbd "C-k e <escape>") 'tau/quit)
+(define-key tau-map "\C-k\ ep" 'counsel-M-x)
+(define-key tau-map (kbd "C-k e <escape>") 'keyboard-quit)
 
 ; Universal keys
-(define-key tau-map (kbd "<tab>") 'company-complete-common)
 (define-key tau-map (kbd "<C-tab>") 'tabbar-forward-tab)
 (define-key tau-map (kbd "<header-line> <mouse-5>") 'tabbar-forward-tab)
 (define-key tau-map (kbd "<C-S-iso-lefttab>") 'tabbar-backward-tab)
@@ -28,7 +32,7 @@
 (define-key tau-map (kbd "C-z") 'undo-tree-undo)
 (define-key tau-map (kbd "C-S-z") 'undo-tree-redo)
 (define-key tau-map (kbd "C-y") 'undo-tree-recdo)
-(define-key tau-map (kbd "C-f") 'counsel-grep)
+(define-key tau-map (kbd "C-f") 'counsel-grep-or-swiper)
 (define-key tau-map (kbd "C-p") 'counsel-projectile-find-file)
 (define-key tau-map (kbd "C-S-f") 'counsel-git-grep)
 

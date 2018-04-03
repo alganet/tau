@@ -1,24 +1,9 @@
 
+(use-package counsel :ensure t)
 
- 
+(use-package smooth-scrolling :ensure t)
 
-
-(use-package async :ensure t)
-(use-package diminish :ensure t
-  :config (progn
-    (diminish 'undo-tree-mode)))
-
-(use-package counsel :ensure t
-       :delight)
-
-(use-package smooth-scrolling :ensure t
-       :delight)
-
-(use-package expand-region :ensure t
-	     :delight)
-
-(use-package neotree :ensure t
-       :delight)
+(use-package expand-region :ensure t)
 
 (use-package multiple-cursors :ensure t
   :config (progn
@@ -67,28 +52,107 @@ nil)
 (use-package markdown-mode :ensure t)
 (use-package go-mode :ensure t)
 (use-package sass-mode :ensure t)
-(use-package auto-complete :ensure t)
+(use-package auto-complete :ensure t :config (global-auto-complete-mode t))
 
-(use-package counsel-projectile :ensure t
-  :delight)
+(use-package projectile :ensure t)
+(use-package counsel-projectile :ensure t)
 
-(use-package swiper :ensure t
-  :delight)
+(use-package swiper :ensure t)
 
 (use-package ivy  :ensure t
-  :delight
   :config (progn
-    (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+
+(defun ivy--sort-length (x y)
+ (> (length y) (length x)))
+
+(setq ivy-sort-functions-alist
+  '((internal-complete-buffer . nil)
+    (ivy-completion-in-region . nil)
+    (counsel-git-grep-function . nil)
+    (Man-goto-section . nil)
+    (org-refile . nil)
+    (t  . ivy--sort-length)))
+	    
+    (setq ivy-re-builders-alist
+      '((counsel-M-x . ivy--regex-fuzzy)
+        (counsel-projectile-find-file . ivy--regex-fuzzy)
+        (t      . ivy--regex-ignore-order)))
+
+(setq ivy-use-virtual-buffers t)
+(setq ivy-display-style nil)
+(setq projectile-completion-system 'ivy)
+
     (ivy-mode 1)))
 
 (use-package spaceline :ensure t
-  :delight
   :config (progn
     (require 'spaceline-config)
 
     (require 'powerline)
-    (setq powerline-height 20)
-    (setq powerline-default-separator 'bar)
+
+
+(defmacro pl/tau (dir)
+  "Generate a tau pattern XPM function for DIR."
+  (pl/pattern-defun "tau" dir 2
+                    '((1 2)
+                      (1 2)
+                      (1 2)
+                      (1 2))
+        nil nil nil nil
+        ;; 2x
+        '((1 1 2 2)
+          (1 1 2 2)
+          (1 1 2 2)
+          (1 1 2 2)
+          (1 1 2 2)
+          (1 1 2 2)
+          (1 1 2 2)
+          (1 1 2 2))))
+
+(defun powerline-reset ()
+  "Reset memoized functions."
+  (interactive)
+  (pl/memoize (pl/alternate left))
+  (pl/memoize (pl/alternate right))
+  (pl/memoize (pl/arrow left))
+  (pl/memoize (pl/arrow right))
+  (pl/memoize (pl/arrow-fade left))
+  (pl/memoize (pl/arrow-fade right))
+  (pl/memoize (pl/bar left))
+  (pl/memoize (pl/bar right))
+  (pl/memoize (pl/box left))
+  (pl/memoize (pl/box right))
+  (pl/memoize (pl/brace left))
+  (pl/memoize (pl/brace right))
+  (pl/memoize (pl/butt left))
+  (pl/memoize (pl/butt right))
+  (pl/memoize (pl/chamfer left))
+  (pl/memoize (pl/chamfer right))
+  (pl/memoize (pl/contour left))
+  (pl/memoize (pl/contour right))
+  (pl/memoize (pl/curve left))
+  (pl/memoize (pl/curve right))
+  (pl/memoize (pl/rounded left))
+  (pl/memoize (pl/rounded right))
+  (pl/memoize (pl/roundstub left))
+  (pl/memoize (pl/roundstub right))
+  (pl/memoize (pl/slant left))
+  (pl/memoize (pl/slant right))
+  (pl/memoize (pl/wave left))
+  (pl/memoize (pl/wave right))
+  (pl/memoize (pl/zigzag left))
+  (pl/memoize (pl/zigzag right))
+  (pl/memoize (pl/tau left))
+  (pl/memoize (pl/tau right))
+  (pl/memoize (pl/nil left))
+  (pl/memoize (pl/nil right))
+  (pl/utf-8 left)
+  (pl/utf-8 right)
+  (pl/reset-cache))
+
+
+    (setq powerline-height 18)
+    (setq powerline-default-separator 'tau)
     (setq spaceline-separator-dir-left '(right . left))
     (setq spaceline-separator-dir-right '(left . right))
     (setq powerline-utf-8-separator-left #x2502)
@@ -158,7 +222,7 @@ nil)
 (require 'aquamacs-tabbar)
 
 
- (when (require 'tabbar nil t)
+(when (require 'tabbar nil t)
    ;; Enable tabbars globally:
    (tabbar-mode 1)
 
@@ -194,14 +258,14 @@ nil)
 
 (setq tabbar-auto-scroll-flag t)
 
-    (setq tabbar-buffer-groups-function
+    (setq tabbar-buffer-groups-functionx
           (lambda () (list "All Buffers")))
-    (setq tabbar-buffer-list-function
+    (setq tabbar-buffer-list-functionx
           (lambda ()
             (remove-if
              (lambda(buffer)
                (find (aref (buffer-name buffer) 0) " *"))
-             (buffer-list))))
+             (cons buffer-list current-buffer))))
 
 
   (defcustom tabbar-hide-header-button t
@@ -221,16 +285,9 @@ Default is t."
                 tabbar-scroll-right-button (quote ((" » ") " » ")))))
     :group 'tabbar)
 
-;; Removes *scratch* from buffer after the mode has been set.
-(defun remove-scratch-buffer ()
-  (if (get-buffer "*scratch*")
-      (kill-buffer "*scratch*")))
-
-(add-hook 'after-change-major-mode-hook 'remove-scratch-buffer)
 
 ;; Removes *messages* from the buffer.
 (setq-default message-log-max nil)
-(kill-buffer "*Messages*")
 
 ;; Don't show *Buffer list* when opening multiple files at the same time.
 (setq inhibit-startup-buffer-menu t)
@@ -238,7 +295,6 @@ Default is t."
 ;; Show only one active window when opening multiple files at the same time.
 (add-hook 'window-setup-hook 'delete-other-windows)
 
-(add-hook 'emacs-startup-hook
-          (lambda () (delete-other-windows)) t)
 
 (provide 'tau-vendor)
+

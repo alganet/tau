@@ -8,22 +8,11 @@
 (column-number-mode 1)
 (fringe-mode '(0 . 0))
 
-(defvar my-linum-format-string " %4d")
-(add-hook 'linum-before-numbering-hook 'my-linum-get-format-string)
-(defun my-linum-get-format-string ()
-
-(let* ((width (length (number-to-string
-                      (count-lines (point-min) (point-max)))))
-      (format (concat " %" (number-to-string (min 2 width)) "d")))
- (setq my-linum-format-string format)))
-
-(defun my-linum-format (line-number)
-	(concat
-		(propertize (format my-linum-format-string line-number) 'face 'linum)
-		(propertize "\u2502 " 'face 'fringe)))
-
-(setq linum-format 'my-linum-format)
+(setq linum-format " %3d ")
 (global-linum-mode t)
+
+(add-hook 'eshell-mode-hook (lambda () 
+	(linum-mode -1)))
 
 (set-default 'truncate-lines t)
 

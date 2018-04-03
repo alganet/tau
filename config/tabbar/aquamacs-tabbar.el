@@ -347,7 +347,7 @@ if specified), in current window."
      (t
       (switch-to-buffer buffer)))
     ;; Don't show groups.
-    (tabbar-buffer-show-groups nil)
+    (tabbar-buffer-show-groups t)
     ))
 
 
@@ -469,7 +469,7 @@ SELECTED-P tells if the item is seleceted."
         (intern (format "powerline-%s-%s" powerline-default-separator dir))))
      (normalize-face (or normalize-face face)))
       (propertize tabbar-decorator
-      'display (tabbar-normalize-image (funcall fun background-face face 20) 0 normalize-face)
+      'display (tabbar-normalize-image (funcall fun background-face face 22) 0 normalize-face)
       'face normalize-face))))
 
 (defun tabbar-line-left-separator (selected-p face background-face)
@@ -509,7 +509,7 @@ Call `tabbar-tab-label-function' to obtain a label for TAB."
 			  'tabbar-selected
 			'tabbar-unselected))
 	   (close-button
-	    (propertize " × "
+	    (propertize "× "
 			'tabbar-tab tab
       'display '(raise 0)
 			'local-map (tabbar-make-tab-keymap tab)
@@ -585,17 +585,17 @@ element."
     (setq tabbar-separator-value
           (cond
            (image
-            (propertize " "
+            (propertize "|"
                         'face 'tabbar-separator
                         'pointer 'arrow
                         'display (tabbar-normalize-image image)))
            ((numberp (car tabbar-separator))
-            (propertize " "
+            (propertize "|"
                         'face 'tabbar-separator
                         'pointer 'arrow
                         'display (list 'space
                                        :width (list (car tabbar-separator)))))
-           ((propertize (or (car tabbar-separator) " ")
+           ((propertize (or (car tabbar-separator) "|")
                         'face 'tabbar-separator
                         'pointer 'arrow))))
     ))
@@ -609,9 +609,8 @@ NOSCROLL is non-nil, exclude the tabbar-scroll buttons."
        (car tabbar-home-button-value)
      (cdr tabbar-home-button-value))
    (if noscroll
-       (list (propertize tabbar-gutter
-                        'face 'tabbar-default
-                        'display (list 'space :width (list 8)))
+       (list (propertize " ταυ "
+                        'face 'tabbar-highlight)
 	     ) ;; insert tabbar-separator-value here?
      (list (if (> (tabbar-start tabset) 0)
 	       (propertize (car tabbar-scroll-left-button-value)

@@ -9,8 +9,12 @@
 
 (setq mc/cmds-to-run-once
       '(
+	counsel-M-x
+	counsel-projectile-find-file
+	eshell-next-matching-input-from-input
 	help-for-help
 	tabbar-backward-tab
 	tabbar-close-tab
 	tabbar-forward-tab
+	tau-copy-mark
 	))

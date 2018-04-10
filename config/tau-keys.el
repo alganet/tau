@@ -12,9 +12,9 @@
 (define-key tau-map (kbd "<backtab>") 'tau/backtab)
 (define-key tau-map (kbd "<S-iso-lefftab>") 'tau/backtab)
 
-; tau-P: Command Palette
-(define-key tau-map (kbd "C-k C-p") 'counsel-M-x)
-(define-key tau-map "\C-k\ ep" 'counsel-M-x)
+; tau-P: Command List
+(define-key tau-map (kbd "C-k C-l") 'counsel-M-x)
+(define-key tau-map "\C-k\ el" 'counsel-M-x)
 
 ; tau-B: Project Browser
 (define-key tau-map (kbd "C-k C-b") 'neotree-toggle)
@@ -69,6 +69,7 @@
 (define-key tau-map (kbd "C-c") 'tau-copy-mark)
 (define-key tau-map (kbd "C-x") 'kill-region)
 (define-key tau-map (kbd "C-v") 'yank)
+(define-key tau-map (kbd "C-z") 'undo-tree-undo)
 (define-key tau-map (kbd "C-S-z") 'undo-tree-redo)
 (define-key tau-map (kbd "C-y") 'undo-tree-redo)
 (define-key tau-map (kbd "C-f") 'counsel-grep-or-swiper)

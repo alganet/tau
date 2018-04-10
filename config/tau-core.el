@@ -26,6 +26,10 @@
           (start-kbd-macro t t)))
     map))
 
+(defun tau/scan ()
+  (interactive)
+  (counsel-etags-scan-code))
+
 (defun tau/tab ()
     (interactive)
   (if (use-region-p) (shift-right) (ac-complete)))
@@ -39,6 +43,7 @@
   (message "ESC")
   (multiple-cursors-mode 0)
   (deactivate-mark)
+  (ac-stop)
   (if (sit-for tau/esc-quit-wait-delay 0 'no-redisplay)
     (progn
       (tau/quit)
@@ -51,11 +56,18 @@
   )
 )
 
+(defun tau-tags ()
+  (interactive)
+  (ac-etags-setup)
+  (ac-etags-ac-setup)
+  (auto-complete-mode 1))
+
 (defun tau/esc-minibuffer-quit ()
   (interactive)
   (message "ESC")
   (multiple-cursors-mode 0)
   (deactivate-mark)
+  (ac-stop)
   (if (sit-for tau/esc-quit-minibuffer-delay 0 'no-redisplay)
     (progn
       (tau/minibuffer-quit)
@@ -220,16 +232,14 @@ position between last non-whitespace and `end-of-line'."
 
 
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 
 (require 'eshell)
 (require 'tau-editor)
 (require 'tau-vendor)
+(require 'counsel-etags)
 (require 'tau-keys)
 (projectile-global-mode 1)
 (global-tau-mode 1)

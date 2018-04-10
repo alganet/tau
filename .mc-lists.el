@@ -3,6 +3,8 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+	smart-beginning-of-line
+	smart-end-of-line
 	tau/esc-quit
 	tau/quit
 	))

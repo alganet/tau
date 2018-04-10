@@ -20,6 +20,13 @@
 (define-key tau-map (kbd "C-k C-b") 'neotree-toggle)
 (define-key tau-map "\C-k\ eb" 'neotree-toggle)
 
+; tau-R: Find tag
+(define-key tau-map (kbd "C-S-r") 'counsel-etags-list-tag)
+(define-key tau-map "\C-k\ \C-r" 'counsel-etags-list-tag)
+(define-key tau-map "\C-k\ er" 'counsel-etags-list-tag)
+(define-key tau-map (kbd "C-M-<down>") 'counsel-etags-find-tag-at-point)
+(define-key tau-map (kbd "s-M-<down>") 'counsel-etags-find-tag-at-point)
+
 ; Windows and Tabs
 
 (define-key tau-map (kbd "<C-tab>") 'tabbar-forward-tab)

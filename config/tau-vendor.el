@@ -64,9 +64,19 @@ nil)
 (use-package markdown-mode :ensure t)
 (use-package go-mode :ensure t)
 (use-package sass-mode :ensure t)
-(use-package auto-complete :ensure t :config (global-auto-complete-mode t))
+(use-package auto-complete
+  :ensure t
+  :config (progn
+    (setq ac-auto-show-menu 1)
+    (setq ac-ignore-case 'smart)
+    (setq ac-delay 0.2)))
 
-(use-package projectile :ensure t)
+(use-package ac-etags
+  :ensure t
+  :config (progn
+    (add-hook 'php-mode-hook 'tau-tags)))
+
+(use-package projectile :ensure t :config (add-hook 'projectile-after-switch-project-hook 'tau-scan))
 (use-package counsel-projectile :ensure t)
 
 (use-package swiper :ensure t)

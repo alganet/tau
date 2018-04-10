@@ -76,6 +76,7 @@
 (define-key tau-map (kbd "C-p") 'counsel-projectile-find-file)
 (define-key tau-map (kbd "C-S-f") 'counsel-git-grep)
 (define-key tau-map (kbd "C-g") 'goto-line)
+(define-key tau-map (kbd "C-s") 'save-buffer)
 (define-key tau-map (kbd "s-a") 'mark-whole-buffer)
 (define-key tau-map (kbd "s-c") 'tau-copy-mark)
 (define-key tau-map (kbd "s-x") 'kill-region)

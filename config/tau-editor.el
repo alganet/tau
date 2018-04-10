@@ -11,9 +11,8 @@
 (setq linum-format " %3d ")
 (global-linum-mode t)
 
-(add-hook 'eshell-mode-hook (lambda () 
+(add-hook 'eshell-mode-hook (lambda ()
 	(linum-mode -1)))
 
 (set-default 'truncate-lines t)
-
 (provide 'tau-editor)

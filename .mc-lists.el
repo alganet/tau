@@ -11,6 +11,7 @@
       '(
 	counsel-M-x
 	counsel-projectile-find-file
+	delete-window
 	eshell-next-matching-input-from-input
 	help-for-help
 	tabbar-backward-tab

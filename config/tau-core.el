@@ -37,6 +37,8 @@
 (defun tau/esc-quit ()
   (interactive)
   (message "ESC")
+  (multiple-cursors-mode 0)
+  (deactivate-mark)
   (if (sit-for tau/esc-quit-wait-delay 0 'no-redisplay)
     (progn
       (tau/quit)
@@ -52,6 +54,8 @@
 (defun tau/esc-minibuffer-quit ()
   (interactive)
   (message "ESC")
+  (multiple-cursors-mode 0)
+  (deactivate-mark)
   (if (sit-for tau/esc-quit-minibuffer-delay 0 'no-redisplay)
     (progn
       (tau/minibuffer-quit)
@@ -72,8 +76,6 @@
 
 (defun tau/quit ()
   (interactive)
-  (multiple-cursors-mode 0)
-  (deactivate-mark)
   (setq quit-flat t)
   (message "ESC")
 )
@@ -156,7 +158,7 @@
     (delete-region beg end)
     (kill-whole-line)
   ))
-  
+
 (defun move-region-down (arg)
    (interactive "*p")
    (move-text-internal arg))
@@ -164,6 +166,24 @@
 (defun move-region-up (arg)
    (interactive "*p")
    (move-text-internal (- arg)))
+
+(defun smart-beginning-of-line ()
+  "Move point to `beginning-of-line'. If repeat command it cycle
+position between `back-to-indentation' and `beginning-of-line'."
+  (interactive "^")
+  (if (and (eq last-command 'my--smart-beginning-of-line)
+           (= (line-beginning-position) (point)))
+      (back-to-indentation)
+    (beginning-of-line)))
+
+(defun smart-end-of-line ()
+  "Move point to `end-of-line'. If repeat command it cycle
+position between last non-whitespace and `end-of-line'."
+  (interactive "^")
+  (if (and (eq last-command 'my--smart-end-of-line)
+           (= (line-end-position) (point)))
+      (skip-syntax-backward " " (line-beginning-position))
+    (end-of-line)))
 
 (require 'undo-tree)
 
@@ -199,20 +219,20 @@
 (prefer-coding-system 'utf-8)
 
 
-    (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 
-    (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 
-    (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
-    (setq scroll-step 1) ;; keyboard scroll one line at a time
+(setq scroll-step 1) ;; keyboard scroll one line at a time
 
 (require 'eshell)
 (require 'tau-editor)
 (require 'tau-vendor)
 (require 'tau-keys)
-(load-theme 'nord)
-(redisplay t)
 (projectile-global-mode 1)
 (global-tau-mode 1)
+(load-theme 'nord)
+(redisplay t)
 (provide 'tau-core)

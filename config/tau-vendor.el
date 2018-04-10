@@ -5,6 +5,18 @@
 
 (use-package expand-region :ensure t)
 
+(use-package neotree :ensure t
+  :config (progn
+    (setq-default cursor-in-non-selected-windows nil)
+    (setq neo-show-updir-line nil)
+    (setq neo-window-fixed-size nil)
+    (setq neo-mode-line-type 'none)
+    (setq neo-window-width 35)
+    (setq neo-cwd-line-style 'button)
+    (setq projectile-switch-project-action 'neotree-projectile-action)
+    (setq-default neo-smart-open t)
+    (setq neo-theme 'nerd)))
+
 (use-package multiple-cursors :ensure t
   :config (progn
 
@@ -72,7 +84,7 @@ nil)
     (Man-goto-section . nil)
     (org-refile . nil)
     (t  . ivy--sort-length)))
-	    
+
     (setq ivy-re-builders-alist
       '((counsel-M-x . ivy--regex-fuzzy)
         (counsel-projectile-find-file . ivy--regex-fuzzy)
@@ -294,7 +306,6 @@ Default is t."
 
 ;; Show only one active window when opening multiple files at the same time.
 (add-hook 'window-setup-hook 'delete-other-windows)
-
 
 (provide 'tau-vendor)
 
